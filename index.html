@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tuan Minh - Trusted Vietnamese Ingredients</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-lime: #84cc16;
+            --dark-forest: #0c1611;
+            --accent-green: #1a2e24;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-forest);
+            color: #ffffff;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* --- REVEAL ANIMATIONS --- */
+        .reveal-node {
+            opacity: 0;
+            transform: translateY(30px) scale(0.98);
+            filter: blur(10px);
+            transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .reveal-node.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+        }
+
+        /* --- STAGGER CHARS --- */
+        .char {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(1em) rotateX(-90deg);
+            filter: blur(12px);
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .char.visible {
+            opacity: 1;
+            transform: translateY(0) rotateX(0);
+            filter: blur(0);
+        }
+
+        /* --- MOUSE PARALLAX HELPERS --- */
+        .parallax-layer {
+            transition: transform 0.2s ease-out;
+        }
+
+        /* --- FLOATING --- */
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(1deg); }
+        }
+        .animate-float {
+            animation: floating 6s ease-in-out infinite;
+        }
+
+        @keyframes orbit-rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .orbit-spin {
+            animation: orbit-rotate 50s linear infinite;
+        }
+
+        /* --- INFINITE MARQUEE ANIMATION --- */
+        @keyframes marqueeScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .marquee-track {
+            display: flex;
+            width: max-content;
+            animation: marqueeScroll 25s linear infinite;
+        }
+
+        .marquee-container:hover .marquee-track {
+            animation-play-state: paused;
+        }
+
+        /* Fade effect on sides */
+        .marquee-container {
+            position: relative;
+            mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+        }
+
+        /* SPECIFIC LAYOUT STYLES */
+        .pill-mask { clip-path: inset(0% 0% 0% 0% round 100px); }
+
+        .hero-bg {
+            background: linear-gradient(to right, rgba(12, 22, 17, 0.98) 20%, rgba(12, 22, 17, 0.6) 100%),
+                        url('./imgs/bg.jpg');
+            
+            background-size: cover;
+            background-position: center;
+        }
+
+        .plantation-bg {
+            background: linear-gradient(to bottom, var(--dark-forest) 0%, rgba(12, 22, 17, 0.4) 50%, #ffffff 100%),
+                        url('https://images.unsplash.com/photo-1597433010537-882208f2371b?q=80&w=1600&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .footer-map {
+            background: url('https://upload.wikimedia.org/wikipedia/commons/4/41/Simple_world_map.svg') center/150% no-repeat;
+            opacity: 0.1;
+            filter: invert(1);
+        }
+
+        /* Menu Mobile Transition */
+        #mobile-nav {
+            clip-path: circle(0% at 100% 0%);
+            transition: clip-path 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        #mobile-nav.open {
+            clip-path: circle(150% at 100% 0%);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header -->
+    <header class="fixed w-full z-50 py-4 md:py-6 px-6 md:px-16 flex justify-between items-center transition-all duration-500" id="main-header">
+        <div class="flex items-center gap-3">
+           <img src="https://minisiteb.qltns.mediacdn.vn/minisite/dffa7b7b046e4dda8a017582219075da-magtm1/images/logo-white.png" alt="">
+        </div>
+        
+        <nav class="hidden lg:flex gap-10 text-[10px] font-bold uppercase tracking-[0.2em]">
+            <a href="#" class="opacity-60 hover:opacity-100 hover:text-lime-400 transition-all">About</a>
+            <a href="#" class="opacity-60 hover:opacity-100 hover:text-lime-400 transition-all">Products</a>
+            <a href="#" class="opacity-60 hover:opacity-100 hover:text-lime-400 transition-all">Sustainability</a>
+            <a href="#" class="opacity-60 hover:opacity-100 hover:text-lime-400 transition-all">Contact</a>
+        </nav>
+
+        <div class="flex items-center gap-4">
+            <div class="hidden sm:flex gap-2 text-[10px] font-bold border border-white/10 rounded-full px-3 py-1 bg-white/5">
+                <span class="opacity-30 cursor-pointer hover:opacity-60 transition">VI</span>
+                <span class="opacity-10">|</span>
+                <span class="text-white cursor-pointer">EN</span>
+            </div>
+            <button class="lg:hidden p-2 relative z-[60]" id="mobile-menu-btn">
+                <div class="w-6 h-4 flex flex-col justify-between" id="hamburger">
+                    <span class="w-full h-0.5 bg-white transition-all duration-300 origin-center"></span>
+                    <span class="w-full h-0.5 bg-white transition-all duration-300 origin-center"></span>
+                    <span class="w-full h-0.5 bg-white transition-all duration-300 origin-center"></span>
+                </div>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Nav Overlay -->
+    <div id="mobile-nav" class="fixed inset-0 bg-lime-600 z-[55] flex flex-col items-center justify-center gap-10 text-black lg:hidden">
+        <a href="#" class="text-3xl font-black uppercase tracking-tighter hover:scale-110 transition">About</a>
+        <a href="#" class="text-3xl font-black uppercase tracking-tighter hover:scale-110 transition">Products</a>
+        <a href="#" class="text-3xl font-black uppercase tracking-tighter hover:scale-110 transition">Sustainability</a>
+        <a href="#" class="text-3xl font-black uppercase tracking-tighter hover:scale-110 transition">Contact</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen hero-bg flex flex-col lg:flex-row items-center px-6 md:px-20 pt-32 pb-20 relative overflow-hidden" id="hero">
+        <!-- Content Left -->
+        <div class="w-full lg:w-1/2 z-20 text-center lg:text-left">
+            <h2 class="reveal-node text-lime-500 font-black tracking-[0.6em] text-[10px] md:text-xs mb-6 uppercase">TRUSTED</h2>
+            <h1 class="stagger-title text-5xl md:text-7xl lg:text-8xl font-black leading-[1.05] mb-8 uppercase tracking-tighter">
+                VIETNAMESE INGREDIENTS
+            </h1>
+            <p class="reveal-node text-xs md:text-sm opacity-50 mb-10 max-w-sm mx-auto lg:mx-0 uppercase tracking-[0.25em] leading-loose font-medium">
+                Responsibly sourced.<br>Globally delivered.
+            </p>
+            <div class="reveal-node flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <button class="bg-lime-600 hover:bg-lime-500 text-white px-12 py-5 rounded-full font-black uppercase text-[10px] tracking-[0.3em] transition-all hover:scale-105 shadow-2xl">
+                    Explore Now
+                </button>
+            </div>
+        </div>
+        
+        <!-- Collage Right -->
+        <div class="w-full lg:w-1/2 relative mt-20 lg:mt-0 flex justify-center items-center" id="hero-collage">
+            <div class="relative w-full aspect-square max-w-[320px] sm:max-w-[500px] lg:max-w-[580px]">
+                <!-- Background Orbits -->
+                <div class="absolute inset-0 border border-white/5 rounded-full border-dashed orbit-spin"></div>
+                <div class="absolute inset-[10%] border border-white/10 rounded-full"></div>
+
+                <!-- Main Image -->
+                <div class="absolute inset-0 flex items-center justify-center z-10 animate-float parallax-layer" data-speed="0.02">
+                    <div class="w-[78%] h-[78%] rounded-full overflow-hidden border-[8px] sm:border-[15px] border-white/5 shadow-2xl group cursor-crosshair">
+                        <img src="https://cubes-asia.com/storage/blogs/2025-01/tim-hieu-nhung-vung-trong-ca-phe-noi-tieng-o.jpg" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110">
+                    </div>
+                </div>
+
+                <!-- Satellite Images -->
+                <!-- Worker -->
+                <div class="absolute top-[5%] right-[5%] sm:top-[3%] sm:right-[8%] w-[34%] h-[34%] sm:w-[38%] sm:h-[38%] z-20 animate-float parallax-layer" data-speed="0.05" style="animation-delay: -2s;">
+                    <div class="w-full h-full rounded-full overflow-hidden border-2 sm:border-4 border-[#0c1611] shadow-2xl">
+                        <img src="https://xliiicoffee.com/wp-content/uploads/2023/08/202308190700-tdnvxl3.jpg" class="w-full h-full object-cover">
+                    </div>
+                </div>
+
+                <!-- Ship -->
+                <div class="absolute bottom-[10%] right-[-5%] sm:bottom-[12%] sm:right-[-8%] w-[42%] h-[28%] sm:w-[48%] sm:h-[32%] z-30 animate-float parallax-layer" data-speed="0.08" style="animation-delay: -4s;">
+                    <div class="w-full h-full pill-mask border-[6px] sm:border-[10px] border-[#0c1611] shadow-2xl overflow-hidden">
+                        <img src="https://imagevietnam.vnanet.vn/MediaUpload/Org/2023/12/08/cai-mep-68-14-14-53.jpg" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Bar -->
+    <div class="bg-[#293d31] py-16 px-8 border-y border-white/5 relative z-20">
+        <div class="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-12">
+            <div class="reveal-node flex flex-col md:flex-row items-center gap-4 group cursor-pointer">
+                <div class="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-lime-500 group-hover:border-lime-500 transition-all duration-500 bg-white/5">
+                    <svg class="w-6 h-6 text-lime-500 group-hover:text-black transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <span class="text-[10px] uppercase tracking-[0.3em] font-black opacity-60 group-hover:opacity-100 transition">Reliable Sourcing</span>
+            </div>
+            <div class="reveal-node flex flex-col md:flex-row items-center gap-4 group cursor-pointer" style="transition-delay: 0.1s;">
+                <div class="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-lime-500 group-hover:border-lime-500 transition-all duration-500 bg-white/5">
+                    <svg class="w-6 h-6 text-lime-500 group-hover:text-black transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9"></path></svg>
+                </div>
+                <span class="text-[10px] uppercase tracking-[0.3em] font-black opacity-60 group-hover:opacity-100 transition">Quality Control</span>
+            </div>
+            <div class="reveal-node flex flex-col md:flex-row items-center gap-4 group cursor-pointer" style="transition-delay: 0.2s;">
+                <div class="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-lime-500 group-hover:border-lime-500 transition-all duration-500 bg-white/5">
+                    <svg class="w-6 h-6 text-lime-500 group-hover:text-black transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.5" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9"></path></svg>
+                </div>
+                <span class="text-[10px] uppercase tracking-[0.3em] font-black opacity-60 group-hover:opacity-100 transition">Export Readiness</span>
+            </div>
+            <div class="reveal-node flex flex-col md:flex-row items-center gap-4 group cursor-pointer" style="transition-delay: 0.3s;">
+                <div class="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-lime-500 group-hover:border-lime-500 transition-all duration-500 bg-white/5">
+                    <svg class="w-6 h-6 text-lime-500 group-hover:text-black transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7"></path></svg>
+                </div>
+                <span class="text-[10px] uppercase tracking-[0.3em] font-black opacity-60 group-hover:opacity-100 transition">Responsible Partnership</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Origin Section -->
+    <section class="origin-section py-32 px-8 relative text-center">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="reveal-node uppercase tracking-[0.5em] text-[10px] font-black text-lime-600 mb-4">THE ORIGIN</h2>
+            <h3 class="stagger-title text-3xl md:text-5xl font-black mb-8 uppercase tracking-tighter text-white">BEHIND EVERY INGREDIENT</h3>
+            <p class="reveal-node text-white/50 text-sm leading-relaxed mb-24 max-w-2xl mx-auto font-medium">
+                Từ những vùng nguyên liệu trù phú của Việt Nam đến thị trường toàn cầu, <br>chúng tôi mang tâm huyết trong từng sản phẩm.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-12 max-w-6xl mx-auto">
+            <div class="reveal-node flex flex-col items-center group cursor-pointer">
+                <div class="w-32 h-32 md:w-44 md:h-44 rounded-full overflow-hidden mb-6 border-4 border-white/10 group-hover:border-lime-500 transition-all duration-700 shadow-2xl bg-[#0c1611]">
+                    <img src="https://classiccoffee.com.vn/files/news/ca-phe-duoc-trong-nhieu-nhat-o-tinh-nao-nuoc-viet-nam-ta-oa8fpnfe.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                </div>
+                <span class="text-[10px] font-black uppercase tracking-[0.3em] text-white group-hover:text-lime-500 transition">Cinnamon</span>
+            </div>
+            <div class="reveal-node flex flex-col items-center group cursor-pointer" style="transition-delay: 0.1s;">
+                <div class="w-32 h-32 md:w-44 md:h-44 rounded-full overflow-hidden mb-6 border-4 border-white/10 group-hover:border-lime-500 transition-all duration-700 shadow-2xl bg-[#0c1611]">
+                    <img src="https://img.thuthuatphanmem.vn/uploads/2018/10/04/hinh-anh-2-ly-cafe_110730767.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                </div>
+                <span class="text-[10px] font-black uppercase tracking-[0.3em] text-white group-hover:text-lime-500 transition">Star Anise</span>
+            </div>
+            <div class="reveal-node flex flex-col items-center group cursor-pointer" style="transition-delay: 0.2s;">
+                <div class="w-32 h-32 md:w-44 md:h-44 rounded-full overflow-hidden mb-6 border-4 border-white/10 group-hover:border-lime-500 transition-all duration-700 shadow-2xl bg-[#0c1611]">
+                    <img src="https://inkythuatso.com/uploads/thumbnails/800/2023/03/1-hinh-anh-cay-ca-phe-tay-nguyen-inkythuatso-28-10-04-56.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                </div>
+                <span class="text-[10px] font-black uppercase tracking-[0.3em] text-white group-hover:text-lime-500 transition">Pepper</span>
+            </div>
+            <div class="reveal-node flex flex-col items-center group cursor-pointer" style="transition-delay: 0.3s;">
+                <div class="w-32 h-32 md:w-44 md:h-44 rounded-full overflow-hidden mb-6 border-4 border-white/10 group-hover:border-lime-500 transition-all duration-700 shadow-2xl bg-[#0c1611]">
+                    <img src="https://img1.kienthucvui.vn/uploads/2021/02/12/hinh-anh-hat-ca-phe-rang_045437176.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                </div>
+                <span class="text-[10px] font-black uppercase tracking-[0.3em] text-white group-hover:text-lime-500 transition">Coconut</span>
+            </div>
+            <div class="reveal-node flex flex-col items-center group cursor-pointer" style="transition-delay: 0.4s;">
+                <div class="w-32 h-32 md:w-44 md:h-44 rounded-full overflow-hidden mb-6 border-4 border-white/10 group-hover:border-lime-500 transition-all duration-700 shadow-2xl bg-[#0c1611]">
+                    <img src="https://img4.thuthuatphanmem.vn/uploads/2020/08/18/anh-mua-hoa-ca-phe-tay-nguyen_092117242.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                </div>
+                <span class="text-[10px] font-black uppercase tracking-[0.3em] text-white group-hover:text-lime-500 transition">Cashew</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Plantation Section -->
+    <section class="plantation-bg py-32 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-8 grid lg:grid-cols-2 gap-10 relative z-10">
+            <!-- Traceability Card -->
+            <div class="reveal-node relative h-[450px] rounded-[3rem] overflow-hidden group shadow-2xl border border-white/5">
+                <img src="./imgs/khoi1.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-1000">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-12 flex flex-col justify-end">
+                    <h4 class="text-white text-3xl font-black mb-4 uppercase tracking-widest">Traceability</h4>
+                    <p class="text-white/60 text-sm max-w-xs leading-relaxed">Minh bạch tuyệt đối từ nông trại đến tận tay người tiêu dùng.</p>
+                </div>
+            </div>
+            <!-- Sustainability Card -->
+            <div class="reveal-node relative h-[450px] rounded-[3rem] overflow-hidden group shadow-2xl border border-white/5" style="transition-delay: 0.1s;">
+                <img src="https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?q=80&w=1000&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-1000">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-12 flex flex-col justify-end text-right items-end">
+                    <h4 class="text-white text-3xl font-black mb-4 uppercase tracking-widest">Sustainability</h4>
+                    <p class="text-white/60 text-sm max-w-xs leading-relaxed">Bảo vệ hệ sinh thái tự nhiên và phát triển cộng đồng bền vững.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Factory & Certifications Section -->
+    <section class="py-24 md:py-32 px-6 md:px-8 bg-white text-center">
+        <div class="max-w-6xl mx-auto">
+            <!-- Part 1: Factory Stats -->
+            <div class="reveal-node mb-24">
+                <h3 class="text-xl md:text-2xl font-black text-[#0c1611] mb-16 uppercase tracking-[0.4em]">OUR FACTORY. YOUR CONFIDENCE.</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16 border-b border-stone-100 pb-20">
+                    <div class="group">
+                        <div class="text-4xl md:text-5xl font-black text-[#0c1611] mb-4 group-hover:text-lime-600 transition-colors">
+                            <span class="count-up" data-target="25000">0</span> <span class="text-xl md:text-2xl">m²</span>
+                        </div>
+                        <div class="text-[9px] md:text-[10px] text-stone-400 font-black uppercase tracking-[0.3em]">Factory Area</div>
+                    </div>
+                    <div class="group">
+                        <div class="text-4xl md:text-5xl font-black text-[#0c1611] mb-4 group-hover:text-lime-600 transition-colors">
+                            <span class="count-up" data-target="10">0</span><span class="text-lime-600">+</span>
+                        </div>
+                        <div class="text-[9px] md:text-[10px] text-stone-400 font-black uppercase tracking-[0.3em]">Production Lines</div>
+                    </div>
+                    <div class="group">
+                        <div class="text-4xl md:text-5xl font-black text-[#0c1611] mb-4 group-hover:text-lime-600 transition-colors">
+                            <span class="count-up" data-target="100">0</span><span class="text-lime-600">%</span>
+                        </div>
+                        <div class="text-[9px] md:text-[10px] text-stone-400 font-black uppercase tracking-[0.3em]">Quality Checked</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Part 2: Certifications Infinite Marquee -->
+            <div class="reveal-node overflow-hidden">
+                <h3 class="text-xl md:text-2xl font-black text-[#0c1611] mb-16 uppercase tracking-[0.4em]">CERTIFICATIONS</h3>
+                
+                <div class="marquee-container py-10">
+                    <div class="marquee-track flex items-center gap-16 md:gap-24">
+                        <!-- Set 1 -->
+                        <div class="flex flex-col items-center group cursor-pointer w-32 md:w-44">
+                            <div class="w-24 h-24 md:w-36 md:h-36 rounded-full border border-stone-100 flex items-center justify-center mb-6 bg-stone-50 group-hover:border-lime-500 group-hover:bg-white transition-all duration-500 shadow-sm hover:shadow-xl">
+                                <img src="https://e7.pngegg.com/pngimages/996/537/png-clipart-iso-9000-international-organization-for-standardization-iso-iec-17025-certification-others-blue-text.png" class="w-12 h-12 md:w-16 md:h-16 group-hover:scale-110 transition duration-500" alt="ISO 22000">
+                            </div>
+                            <div class="text-[10px] md:text-xs font-black text-black uppercase tracking-widest">ISO 22000:2018</div>
+                        </div>
+                        <div class="flex flex-col items-center group cursor-pointer w-32 md:w-44">
+                            <div class="w-24 h-24 md:w-36 md:h-36 rounded-full border border-stone-100 flex items-center justify-center mb-6 bg-stone-50 group-hover:border-lime-500 group-hover:bg-white transition-all duration-500 shadow-sm hover:shadow-xl">
+                                <img src="https://e7.pngegg.com/pngimages/996/537/png-clipart-iso-9000-international-organization-for-standardization-iso-iec-17025-certification-others-blue-text.png" class="w-12 h-12 md:w-16 md:h-16 group-hover:scale-110 transition duration-500" alt="HACCP">
+                            </div>
+                            <div class="text-[10px] md:text-xs font-black text-black uppercase tracking-widest">HACCP</div>
+                        </div>
+                        <div class="flex flex-col items-center group cursor-pointer w-32 md:w-44">
+                            <div class="w-24 h-24 md:w-36 md:h-36 rounded-full border border-stone-100 flex items-center justify-center mb-6 bg-stone-50 group-hover:border-lime-500 group-hover:bg-white transition-all duration-500 shadow-sm hover:shadow-xl">
+                                <img src="https://e7.pngegg.com/pngimages/996/537/png-clipart-iso-9000-international-organization-for-standardization-iso-iec-17025-certification-others-blue-text.png" class="w-12 h-12 md:w-16 md:h-16 group-hover:scale-110 transition duration-500" alt="HALAL">
+                            </div>
+                            <div class="text-[10px] md:text-xs font-black text-black uppercase tracking-widest">HALAL</div>
+                        </div>
+                        <div class="flex flex-col items-center group cursor-pointer w-32 md:w-44">
+                            <div class="w-24 h-24 md:w-36 md:h-36 rounded-full border border-stone-100 flex items-center justify-center mb-6 bg-stone-50 group-hover:border-lime-500 group-hover:bg-white transition-all duration-500 shadow-sm hover:shadow-xl">
+                                <img src="https://e7.pngegg.com/pngimages/996/537/png-clipart-iso-9000-international-organization-for-standardization-iso-iec-17025-certification-others-blue-text.png" class="w-12 h-12 md:w-16 md:h-16 group-hover:scale-110 transition duration-500" alt="FDA">
+                            </div>
+                            <div class="text-[10px] md:text-xs font-black text-black uppercase tracking-widest">FDA</div>
+                        </div>
+                        <!-- Set 2 (Duplicate for loop) -->
+                        <div class="flex flex-col items-center group cursor-pointer w-32 md:w-44">
+                            <div class="w-24 h-24 md:w-36 md:h-36 rounded-full border border-stone-100 flex items-center justify-center mb-6 bg-stone-50 group-hover:border-lime-500 group-hover:bg-white transition-all duration-500 shadow-sm hover:shadow-xl">
+                                <img src="https://e7.pngegg.com/pngimages/996/537/png-clipart-iso-9000-international-organization-for-standardization-iso-iec-17025-certification-others-blue-text.png" class="w-12 h-12 md:w-16 md:h-16 group-hover:scale-110 transition duration-500" alt="ISO 22000">
+                            </div>
+                            <div class="text-[10px] md:text-xs font-black text-black uppercase tracking-widest">ISO 22000:2018</div>
+                        </div>
+                        <div class="flex flex-col items-center group cursor-pointer w-32 md:w-44">
+                            <div class="w-24 h-24 md:w-36 md:h-36 rounded-full border border-stone-100 flex items-center justify-center mb-6 bg-stone-50 group-hover:border-lime-500 group-hover:bg-white transition-all duration-500 shadow-sm hover:shadow-xl">
+                                <img src="https://e7.pngegg.com/pngimages/996/537/png-clipart-iso-9000-international-organization-for-standardization-iso-iec-17025-certification-others-blue-text.png" class="w-12 h-12 md:w-16 md:h-16 group-hover:scale-110 transition duration-500" alt="HACCP">
+                            </div>
+                            <div class="text-[10px] md:text-xs font-black text-black uppercase tracking-widest">HACCP</div>
+                        </div>
+                        <div class="flex flex-col items-center group cursor-pointer w-32 md:w-44">
+                            <div class="w-24 h-24 md:w-36 md:h-36 rounded-full border border-stone-100 flex items-center justify-center mb-6 bg-stone-50 group-hover:border-lime-500 group-hover:bg-white transition-all duration-500 shadow-sm hover:shadow-xl">
+                                <img src="https://e7.pngegg.com/pngimages/996/537/png-clipart-iso-9000-international-organization-for-standardization-iso-iec-17025-certification-others-blue-text.png" class="w-12 h-12 md:w-16 md:h-16 group-hover:scale-110 transition duration-500" alt="HALAL">
+                            </div>
+                            <div class="text-[10px] md:text-xs font-black text-black uppercase tracking-widest">HALAL</div>
+                        </div>
+                        <div class="flex flex-col items-center group cursor-pointer w-32 md:w-44">
+                            <div class="w-24 h-24 md:w-36 md:h-36 rounded-full border border-stone-100 flex items-center justify-center mb-6 bg-stone-50 group-hover:border-lime-500 group-hover:bg-white transition-all duration-500 shadow-sm hover:shadow-xl">
+                                <img src="https://e7.pngegg.com/pngimages/996/537/png-clipart-iso-9000-international-organization-for-standardization-iso-iec-17025-certification-others-blue-text.png" class="w-12 h-12 md:w-16 md:h-16 group-hover:scale-110 transition duration-500" alt="FDA">
+                            </div>
+                            <div class="text-[10px] md:text-xs font-black text-black uppercase tracking-widest">FDA</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Map -->
+    <section class="bg-[#0b1510] text-white py-32 px-8 relative overflow-hidden">
+        <div class="absolute inset-0 footer-map"></div>
+        <div class="max-w-5xl mx-auto relative z-10 text-center md:text-left">
+            <h3 class="stagger-title text-4xl md:text-7xl font-black mb-10 tracking-tighter uppercase leading-[0.95]">READY TO SOURCE<br>FROM VIETNAM?</h3>
+            <p class="reveal-node text-white/40 mb-14 max-w-md text-sm md:text-lg font-light leading-loose mx-auto md:mx-0">
+                Hãy cùng chúng tôi nâng tầm giá trị nông sản Việt trên bản đồ thế giới.
+            </p>
+            <div class="reveal-node flex flex-col sm:flex-row gap-6 justify-center md:justify-start">
+                <button class="bg-lime-500 hover:bg-lime-400 text-black px-12 py-5 rounded-full font-black uppercase text-[11px] tracking-widest shadow-2xl transition-all hover:-translate-y-2">Contact Us</button>
+                <button class="border border-white/10 hover:bg-white/5 text-white px-12 py-5 rounded-full font-black uppercase text-[11px] tracking-widest transition-all hover:-translate-y-2">Learn More</button>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-black py-10 px-8 text-center text-[10px] text-white/20 uppercase tracking-[0.5em] font-black">
+        &copy; 2024 TUAN MINH AGRICULTURAL. BEYOND THE LIMITS.
+    </footer>
+
+    <script>
+        // --- 1. SMOOTH REVEAL & STAGGER TEXT LOGIC ---
+        function setupStaggerText(element) {
+            const text = element.textContent.trim();
+            const words = text.split(' ');
+            element.innerHTML = '';
+            
+            words.forEach((word, wordIdx) => {
+                const wordSpan = document.createElement('span');
+                wordSpan.classList.add('inline-block', 'whitespace-nowrap', 'mr-[0.3em]');
+                
+                word.split('').forEach(char => {
+                    const charSpan = document.createElement('span');
+                    charSpan.textContent = char;
+                    charSpan.classList.add('char');
+                    wordSpan.appendChild(charSpan);
+                });
+                element.appendChild(wordSpan);
+            });
+            return element.querySelectorAll('.char');
+        }
+
+        function animateChars(chars) {
+            chars.forEach((char, i) => {
+                setTimeout(() => char.classList.add('visible'), i * 35);
+            });
+        }
+
+        // --- 2. NUMBER COUNTER LOGIC ---
+        function animateCounter(el) {
+            const target = parseInt(el.dataset.target);
+            const duration = 2500;
+            const start = performance.now();
+
+            function update(now) {
+                const elapsed = now - start;
+                const progress = Math.min(elapsed / duration, 1);
+                const ease = 1 - Math.pow(1 - progress, 5); // easeOutQuint
+                const current = Math.floor(ease * target);
+                
+                el.textContent = target >= 1000 ? current.toLocaleString() : current;
+                if (progress < 1) requestAnimationFrame(update);
+                else el.textContent = target.toLocaleString();
+            }
+            requestAnimationFrame(update);
+        }
+
+        // --- 3. MOUSE PARALLAX LOGIC ---
+        const layers = document.querySelectorAll('.parallax-layer');
+        
+        window.addEventListener('mousemove', (e) => {
+            const x = (e.clientX - window.innerWidth / 2) * -1;
+            const y = (e.clientY - window.innerHeight / 2) * -1;
+            
+            layers.forEach(layer => {
+                const speed = layer.dataset.speed;
+                layer.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+            });
+        });
+
+        // --- 4. INTERSECTION OBSERVER ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    
+                    if (entry.target.classList.contains('stagger-title') && !entry.target.dataset.animated) {
+                        const chars = setupStaggerText(entry.target);
+                        animateChars(chars);
+                        entry.target.dataset.animated = "true";
+                    }
+
+                    entry.target.querySelectorAll('.count-up').forEach(c => {
+                        if (!c.dataset.counted) {
+                            animateCounter(c);
+                            c.dataset.counted = "true";
+                        }
+                    });
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.reveal-node, .stagger-title').forEach(el => observer.observe(el));
+
+        // --- 5. HEADER & UI LOGIC ---
+        const header = document.getElementById('main-header');
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileNav = document.getElementById('mobile-nav');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 80) {
+                header.classList.add('bg-[#0c1611]/95', 'backdrop-blur-xl', 'py-4', 'shadow-2xl');
+                header.classList.remove('py-6');
+            } else {
+                header.classList.remove('bg-[#0c1611]/95', 'backdrop-blur-xl', 'py-4', 'shadow-2xl');
+                header.classList.add('py-6');
+            }
+        });
+
+        mobileBtn.addEventListener('click', () => {
+            const isOpen = mobileNav.classList.toggle('open');
+            document.body.style.overflow = isOpen ? 'hidden' : 'auto';
+            const spans = document.querySelectorAll('#hamburger span');
+            if (isOpen) {
+                spans[0].style.transform = 'translateY(7px) rotate(45deg)';
+                spans[1].style.opacity = '0';
+                spans[1].style.transform = 'scale(0)';
+                spans[2].style.transform = 'translateY(-7px) rotate(-45deg)';
+            } else {
+                spans[0].style.transform = 'none';
+                spans[1].style.opacity = '1';
+                spans[1].style.transform = 'none';
+                spans[2].style.transform = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
